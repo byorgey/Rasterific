@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -16,6 +17,11 @@ module Graphics.Rasterific.Compositor
     , emptyPx
     ) where
 
+#if !MIN_VERSION_base(4,8,0)
+import Data.Foldable( Foldable )
+import Control.Applicative( Applicative, (<$>) )
+#endif
+import qualified Data.Foldable as F
 import Foreign.Storable( Storable )
 import Data.Bits( unsafeShiftR )
 import Data.Word( Word8, Word32 )
@@ -44,7 +50,7 @@ class ( Applicative (Holder a)
   maxRepresentable :: Proxy a -> Float
 
 maxDistance :: InterpolablePixel a => a -> a -> Float
-maxDistance p1 p2 = maximum $ abs <$> (toFloatPixel p1 ^-^ toFloatPixel p2)
+maxDistance p1 p2 = F.maximum $ abs <$> (toFloatPixel p1 ^-^ toFloatPixel p2)
 
 instance InterpolablePixel Float where
   type Holder Float = V1

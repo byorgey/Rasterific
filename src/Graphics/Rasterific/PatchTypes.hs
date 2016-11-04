@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -36,6 +37,11 @@ module Graphics.Rasterific.PatchTypes
   , xDerivative
   , yDerivative
   ) where
+
+#if !MIN_VERSION_base(4,8,0)
+import Data.Foldable( Foldable, foldMap )
+import Control.Applicative( Applicative, (<$>), (<*>), pure )
+#endif
 
 import Data.Monoid( (<>) )
 import qualified Data.Vector as V

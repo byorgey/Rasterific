@@ -53,8 +53,8 @@ import Data.DList( DList, fromList )
 
 #if !MIN_VERSION_base(4,8,0)
 import Data.Foldable( Foldable )
-import Data.Traversable( Traversable )
-import Control.Applicative( (<$>), (<*>), pure )
+import Data.Traversable( Traversable, traverse )
+import Control.Applicative( Applicative, (<$>), (<*>), pure )
 #endif
 import Control.Monad.Identity( runIdentity )
 import Data.Foldable( foldl', toList )
@@ -217,8 +217,8 @@ class Transformable a where
     transform :: (Point -> Point) -> a -> a
     transform f = runIdentity . transformM (return . f)
 
-    -- | Transform but monadic
-    transformM :: Monad m => (Point -> m Point) -> a -> m a
+    -- | Transform, but in an Applicative context.
+    transformM :: Applicative m => (Point -> m Point) -> a -> m a
 
 -- | Typeclass helper gathering all the points of a given
 -- geometry.
@@ -443,7 +443,7 @@ instance PointFoldable Primitive where
 instance {-# OVERLAPPABLE #-} (Traversable f, Transformable a)
       => Transformable (f a) where
     transform f = fmap (transform f)
-    transformM f = mapM (transformM f)
+    transformM f = traverse (transformM f)
 
 instance {-# OVERLAPPABLE #-} (Foldable f, PointFoldable a)
       => PointFoldable (f a) where
